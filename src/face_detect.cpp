@@ -24,7 +24,7 @@ FaceDetect::~FaceDetect() {}
 void FaceDetect::initFaceDetector()
 {
   if (!nh_.getParam("haar_cascade", classifier_model_)) {
-    classifier_model_ = "/home/tasuku/workspace/ROS/catkin_ws/src/face_detect/models/haarcascade_frontalface_alt.xml";
+    std::cerr << "No model file name found in parameter server." << std::endl;
   }
 
   // If not specified at launch time from launch file, then do not showing
