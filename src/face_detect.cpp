@@ -38,7 +38,6 @@ void FaceDetect::initFaceDetector()
   } else {
     std::cout << "Model loaded..." << std::endl;
   }
-
 }
 
 
@@ -63,18 +62,15 @@ void FaceDetect::registerSubscriber()
 void FaceDetect::convertImageCB(const sensor_msgs::ImageConstPtr& img)
 {
   cv_bridge::CvImagePtr cv_ptr;
-  try
-  {
+  try {
     cv_ptr = cv_bridge::toCvCopy(img, sensor_msgs::image_encodings::BGR8);
   }
-  catch (cv_bridge::Exception& e)
-  {
+  catch (cv_bridge::Exception& e) {
     std::cerr << "cv_bridge exception: " << e.what();
     return;
   }
 
   cur_img_ = cv_ptr->image;
-
   detectFace();
 }
 
@@ -88,35 +84,30 @@ void FaceDetect::detectFace()
   // Find faces in image that are greater than min size (10,10) and store in vector<cv::Rect>.
   fc_.detectMultiScale(img_gray, faces_, 1.1, 3, 0|CV_HAAR_SCALE_IMAGE, cv::Size(10, 10));
   std::cout << "Faces detected...: " << faces_.size() << std::endl;
-
   
   face_detect::Faces faces_msg;
   faces_msg.img.header.stamp = ros::Time::now();
 
   // Fill out location of detected faces and add to array of faces
-  for (auto i = 0; i < faces_.size(); i++) {
+  std::for_each(faces_.begin(), faces_.end(), [&](cv::Rect face_src) {
     face_detect::Face face;
-    face.x = faces_[i].x;
-    face.y = faces_[i].y;
-    face.h = faces_[i].height;
-    face.w = faces_[i].width;
-
+    face.x = face_src.x;
+    face.y = face_src.y;
+    face.h = face_src.height;
+    face.w = face_src.width;
     faces_msg.faces.push_back(face);
-  }
+  });
   
   // Need to manually fill out attributes as cur_img_ was allocated separately
   sensor_msgs::ImagePtr msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8", cur_img_).toImageMsg();
 
   faces_msg.img = *msg;
-
   detected_faces_coord_pub_.publish(faces_msg);
 
   // Set boolean in launch file, if you want to publish image with rectangles
   if (bounding_) {
     drawBoundRect();
-
     sensor_msgs::ImagePtr msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8", img_with_bounding_).toImageMsg();
-
     detected_faces_pub_.publish(msg);
   }
 }
@@ -125,11 +116,9 @@ void FaceDetect::detectFace()
 void FaceDetect::drawBoundRect()
 {
   img_with_bounding_ = cur_img_.clone();
-
-  for (auto i = 0; i < faces_.size(); i++) {
-    // Draws bounding rectangles around each detected face.
-    cv::rectangle(img_with_bounding_, faces_[i], cv::Scalar(0,255,0), 10); 
-  }
+  // Draws bounding rectangles around each detected face.
+  std::for_each(faces_.begin(), faces_.end(), [&](cv::Rect face) {
+     cv::rectangle(img_with_bounding_, face, cv::Scalar(0,255,0), 10); 
+  });
 }
-
 } // face_detect
