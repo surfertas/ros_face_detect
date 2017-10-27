@@ -27,5 +27,11 @@ If you do not want to output bounding rectangles for performance reasons, go to 
 and set the `param` with name `bound_rectangles` to false.
 
 
+Note: As this was intended to run on Jetson TX1, I have set the default as the cuda implementation,
+thus CMakefile.txt and `face_detect_node.cpp` reflect this. If you would like to run the CPU version
+make the necessary edits to CMakefile.txt by changing the names in `add_executables()` and also the header
+file included in `face_detect_node.cpp` to `#include face_detect_cuda.h`.
+
+
 
 
