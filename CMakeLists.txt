@@ -13,7 +13,10 @@ find_package(catkin REQUIRED COMPONENTS
   message_generation
 )
 
-find_package(OpenCV REQUIRED)
+find_package(OpenCV REQUIRED
+NO_MODULE
+PATHS /usr/local
+NO_DEFAULT_PATH)
 
 add_message_files(DIRECTORY msg
   FILES
@@ -47,7 +50,7 @@ include_directories(
 )
 
 add_library(${PROJECT_NAME}
-   src/face_detect.cpp
+   src/face_detect_cuda.cpp
 )
 
 target_link_libraries(${PROJECT_NAME}
