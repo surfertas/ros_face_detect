@@ -3,8 +3,8 @@
  */
 
 
-#ifndef FACE_DETECT_H
-#define FACE_DETECT_H
+#ifndef FACE_DETECT_CUDA_H
+#define FACE_DETECT_CUDA_H
 
 #include <ros/ros.h>
 #include <cv_bridge/cv_bridge.h>
@@ -120,5 +120,5 @@ private:
 };
 }
 
-#endif //FACE_DETECT_H
+#endif //FACE_DETECT_CUDA_H
 
